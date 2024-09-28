@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 // Check if 'city' is set in the POST request
 if (isset($_POST['city'])) {
     $city = $_POST['city'];
-    $apiKey = 'ddcbff1279e57c72e7504b454b453035';  // Replace with your OpenWeatherMap API key
+    $apiKey = 'Api Key';  // Replace with your OpenWeatherMap API key
 
     // OpenWeatherMap API URL
     $apiUrl = "https://api.openweathermap.org/data/2.5/weather?q={$city}&appid={$apiKey}&units=metric";
