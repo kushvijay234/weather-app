@@ -6,30 +6,45 @@ function getWeather() {
         return;
     }
 
-    // Create an XMLHttpRequest object
     var xhr = new XMLHttpRequest();
     xhr.open('POST', 'api.php', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-    // When the request is complete
     xhr.onload = function () {
         if (xhr.status === 200) {
-            var response = JSON.parse(xhr.responseText);
-            if (response.error) {
-                document.getElementById('weather-info').innerHTML = `<p>${response.error}</p>`;
-            } else {
-                displayWeather(response);
+            try {
+                // Parse the JSON response
+                var response = JSON.parse(xhr.responseText);
+
+                // Check if the response contains an error message
+                if (response.error) {
+                    document.getElementById('weather-info').innerHTML = `<p>${response.error}</p>`;
+                } else if (response.cod && response.cod !== 200) {
+                    // Check if the API returned an error (e.g., invalid city name)
+                    document.getElementById('weather-info').innerHTML = `<p>Error: ${response.message}</p>`;
+                } else {
+                    // Display the weather data if no errors
+                    displayWeather(response);
+                }
+            } catch (e) {
+                // Log any errors in JSON parsing
+                document.getElementById('weather-info').innerHTML = `<p>Invalid response from server. Please try again.</p>`;
+                console.error('Error parsing JSON:', e);
             }
         } else {
             alert('Error fetching weather data.');
         }
     };
 
-    // Send the city name to the PHP script
-    xhr.send('city=' + city);
+    xhr.onerror = function () {
+        alert('Request failed. Please check your network connection.');
+    };
+
+    // Send the city name to the PHP backend
+    xhr.send('city=' + encodeURIComponent(city));
 }
 
-// Function to display the weather data on the page
+// Function to display the weather data
 function displayWeather(data) {
     var weatherInfo = `
         <h2>Weather in ${data.name}, ${data.sys.country}</h2>
